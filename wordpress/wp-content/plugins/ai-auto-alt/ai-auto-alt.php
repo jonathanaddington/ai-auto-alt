@@ -16,19 +16,69 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
 
 add_action( 'add_attachment', PLUGIN_NAMESPACE . '_media_upload_hook' );
 
-// Function to create an empty settings page
+// Register settings and fields
+function ai_auto_alt_register_settings() {
+    register_setting(PLUGIN_NAMESPACE . '_options_group', PLUGIN_NAMESPACE . '_settings');
+
+    add_settings_section(
+        PLUGIN_NAMESPACE . '_settings_section',
+        'AI Auto Alt Settings',
+        'ai_auto_alt_settings_section_cb',
+        PLUGIN_NAMESPACE
+    );
+
+    // Add more settings fields as needed
+
+    // Callback functions for rendering settings fields go here
+}
+
+add_action('admin_init', 'ai_auto_alt_register_settings');
+
+// Activation hook
+function ai_auto_alt_activate() {
+    // Set default settings
+    $default_settings = array(
+        'OPENAI_API_KEY' => '',
+        'OPENAI_MODEL' => 'gpt-4-1106-preview',
+        'MEDIA_ATTACHMENT_TYPES' => array('jpg', 'jpeg', 'png', 'gif', 'webp'),
+        'OPENAI_PROMPT' => "You are an expert in web development for the visually impaired. I am going to give you an image I want you to generate alternate text for. This is expressly to help visually impaired persons navigate the website, so you should focus on text that explains what the image does and the context of it, rather than long verbose descriptions.\n\nPlease review your work before returning text.\n\nThe image is: {{URL}}"
+    );
+    
+    // Add default settings to the database if they don't already exist
+    if (!get_option(PLUGIN_NAMESPACE . '_settings')) {
+        add_option(PLUGIN_NAMESPACE . '_settings', $default_settings);
+    }
+}
+
+register_activation_hook(__FILE__, 'ai_auto_alt_activate');
+
+// Deactivation hook
+function ai_auto_alt_deactivate() {
+    // Actions to perform on plugin deactivation
+    delete_option(PLUGIN_NAMESPACE . '_settings');
+}
+
+register_deactivation_hook(__FILE__, 'ai_auto_alt_deactivate');
+
+// Callback for the settings section
+function ai_auto_alt_settings_section_cb() {
+    echo '<p>Enter your OpenAI settings below:</p>';
+}
+
+// Callbacks for each settings field go here
+
+// Function to create settings page
 function ai_auto_alt_settings_page() {
     add_options_page(
-        'AI Auto Alt Settings',               // The text to be displayed in the title tags of the page when the menu is selected
-        'AI Auto Alt',                        // The text to be used for the menu
-        'manage_options',                     // The capability required for this menu to be displayed to the user
-        PLUGIN_NAMESPACE . '_settings',       // The slug name to refer to this menu by (should be unique for this menu)
-        PLUGIN_NAMESPACE . '_display_settings' // The function to be called to output the content for this page.
+        'AI Auto Alt Settings',
+        'AI Auto Alt',
+        'manage_options',
+        PLUGIN_NAMESPACE . '_settings',
+        'ai_auto_alt_display_settings'
     );
 }
 
-// Hook to add settings page to the admin menu
-add_action( 'admin_menu', PLUGIN_NAMESPACE . '_settings_page' );
+add_action( 'admin_menu', 'ai_auto_alt_settings_page' );
 
 // Display function for the settings page content
 function ai_auto_alt_display_settings() {
@@ -36,34 +86,12 @@ function ai_auto_alt_display_settings() {
     <div class="wrap">
         <h2>AI Auto Alt Settings</h2>
         <form method="post" action="options.php">
-            <!-- Your settings form inputs go here -->
+            <?php settings_fields(PLUGIN_NAMESPACE . '_options_group'); ?>
+            <?php do_settings_sections(PLUGIN_NAMESPACE); ?>
+            <?php submit_button(); ?>
         </form>
     </div>
     <?php
 }
 
-// Activation hook
-function ai_auto_alt_activate() {
-    // Set default settings
-    $default_settings = array(
-        'OPENAI_API_KEY' => '',
-        'OPENAI_MODEL' => 'gpt-4-1106-preview', // Set the default model to gpt-4-1106-preview
-        'MEDIA_ATTACHMENT_TYPES' => array('jpg', 'jpeg', 'png', 'gif', 'webp'), // Default media types as extensions
-    );
-    
-    // Add default settings to the database if they don't already exist
-    if (!get_option('ai_auto_alt_settings')) {
-        add_option('ai_auto_alt_settings', $default_settings);
-    }
-}
-
-register_activation_hook(__FILE__, 'ai_auto_alt_activate');
-
-register_activation_hook( __FILE__, PLUGIN_NAMESPACE . '_activate' );
-
-// Deactivation hook
-function ai_auto_alt_deactivate() {
-    // Actions to perform once on plugin deactivation
-}
-
-register_deactivation_hook( __FILE__, PLUGIN_NAMESPACE . '_deactivate' );
+// Callback functions for rendering settings fields should be added here

@@ -15,3 +15,6 @@ The directoy `dev/data/db` is used to store the database for the local Wordpress
 has a local bind mount to the container and will persist across restarts. The initial Wordpress
 directory is commited to the repository so you can start the local instance without any additional
 setup. No other commits to the Wordpress directory should be made.
+
+The Wordpress admin page is at [http://localhost:8080/wp-admin](http://localhost:8000/wp-admin). The login is
+`ai-auto-alt:ai-auto-alt`

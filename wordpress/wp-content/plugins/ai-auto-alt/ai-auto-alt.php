@@ -289,29 +289,26 @@ function ai_auto_alt_deactivate() {
 
 register_deactivation_hook(__FILE__, 'ai_auto_alt_deactivate');
 
-// Callback for the settings section
-function ai_auto_alt_settings_section_cb() {
-    echo '<p>Enter your OpenAI settings below:</p>';
-}
-
-// Callbacks for each settings field go here
 // Callback for the API key field
 function ai_auto_alt_api_key_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     echo '<input id="ai_auto_alt_api_key" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_API_KEY]" type="text" value="' . esc_attr($options['OPENAI_API_KEY']) . '" class="regular-text" />';
+    echo '<p class="description">Your OpenAI API key.</p>';
 }
 
 // Callback for the model field
 function ai_auto_alt_model_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     echo '<input id="ai_auto_alt_model" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_MODEL]" type="text" value="' . esc_attr($options['OPENAI_MODEL']) . '" class="regular-text" />';
+    echo '<p class="description">The specific OpenAI model to use (e.g., "gpt-4-vision-preview").</p>';
 }
 
 // Callback for the media attachment types field
 function ai_auto_alt_media_types_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
-    $types = implode(', ', (array) $options['MEDIA_ATTACHMENT_TYPES']); // Cast to array for safety
+    $types = implode(', ', (array) $options['MEDIA_ATTACHMENT_TYPES']);
     echo '<input id="ai_auto_alt_media_types" name="' . PLUGIN_NAMESPACE . '_settings[MEDIA_ATTACHMENT_TYPES]" type="text" value="' . esc_attr($types) . '" class="regular-text" />';
+    echo '<p class="description">Comma-separated list of media attachment types to process (e.g., jpg, jpeg, png).</p>';
 }
 
 // Callback for the OpenAI prompt field
@@ -319,17 +316,20 @@ function ai_auto_alt_openai_prompt_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     $prompt = $options['OPENAI_PROMPT'];
     echo '<textarea id="ai_auto_alt_openai_prompt" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_PROMPT]" rows="5" cols="50" class="large-text code">' . esc_textarea($prompt) . '</textarea>';
+    echo '<p class="description">The prompt text sent to OpenAI API for generating alt text (customizable to guide the response).</p>';
 }
 
 function ai_auto_alt_local_debug_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     $local_debug_checked = isset($options['AI_AUTO_ALT_LOCAL_DEBUG']) ? 'checked' : '';
     echo '<input id="ai_auto_alt_local_debug" name="' . PLUGIN_NAMESPACE . '_settings[AI_AUTO_ALT_LOCAL_DEBUG]" type="checkbox" ' . $local_debug_checked . ' value="1">';
+    echo '<p class="description">Enable local debugging mode to use test URLs from a markdown file.</p>';
 }
 
 function ai_auto_alt_images_md_path_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     echo '<input id="ai_auto_alt_images_md_path" name="' . PLUGIN_NAMESPACE . '_settings[AI_AUTO_ALT_IMAGES_MD_PATH]" type="text" value="' . esc_attr($options['AI_AUTO_ALT_IMAGES_MD_PATH']) . '" class="regular-text" />';
+    echo '<p class="description">The file path for the markdown file containing image URLs, used in local debugging mode.</p>';
 }
 
 // Define the callback function if you have an advanced settings section:

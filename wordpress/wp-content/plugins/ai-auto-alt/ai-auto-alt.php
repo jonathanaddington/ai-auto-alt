@@ -63,7 +63,7 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
                     ],
                     [
                         'type' => 'image_url',
-                        'image_url' => $attachment_url  // Directly passing the URL
+                        'image_url' => "https://upload.wikimedia.org/wikipedia/commons/3/3e/Nubian_houses.jpg?download"  // Directly passing the URL
                     ]
                 ]
             ],
@@ -110,7 +110,8 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $options['OPENAI_API_KEY']
             ),
-            'body' => $request_data_json
+            'body' => $request_data_json,
+            'timeout' => 30 // Setting the timeout to 30 seconds
         )
     );
 

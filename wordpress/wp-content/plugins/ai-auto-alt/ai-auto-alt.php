@@ -74,7 +74,7 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
         "id": "chatcmpl-123",
         "object": "chat.completion",
         "created": 1677652288,
-        "model": "gpt-3.5-turbo-0613",
+        "model": "gpt-4-vision-preview",
         "system_fingerprint": "fp_44709d6fcb",
         "choices": [{
             "index": 0,
@@ -188,7 +188,7 @@ function ai_auto_alt_activate() {
     // Set default settings
     $default_settings = array(
         'OPENAI_API_KEY' => '',
-        'OPENAI_MODEL' => 'gpt-4-1106-preview',
+        'OPENAI_MODEL' => 'gpt-4-vision-preview',
         'MEDIA_ATTACHMENT_TYPES' => array('jpg', 'jpeg', 'png', 'gif', 'webp'),
         'OPENAI_PROMPT' => "You are an expert in web development for the visually impaired. I am going to give you an image I want you to generate alternate text for. This is expressly to help visually impaired persons navigate the website, so you should focus on text that explains what the image does and the context of it, rather than long verbose descriptions.\n\nPlease review your work before returning text."
     );

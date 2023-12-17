@@ -516,3 +516,27 @@ function ai_auto_alt_settings_validate($input) {
 
     return $new_input;
 }
+
+// Add custom field to attachment edit form
+function ai_auto_alt_backup_field_to_attachment( $form_fields, $post ) {
+    $backup_alt = get_post_meta($post->ID, 'ai_auto_alt_backup', true);
+
+    $form_fields['ai_auto_alt_backup'] = array(
+        'label' => 'AI Auto Alt Backup',
+        'input' => 'text',
+        'value' => $backup_alt,
+        'helps' => 'Backup of the previous ALT text before AI Auto Alt update',
+    );
+
+    return $form_fields;
+}
+add_filter('attachment_fields_to_edit', 'ai_auto_alt_backup_field_to_attachment', 10, 2);
+
+// Save custom field from attachment edit form
+function ai_auto_alt_backup_field_to_attachment_save( $post, $attachment ) {
+    if (isset($attachment['ai_auto_alt_backup'])) {
+        update_post_meta($post['ID'], 'ai_auto_alt_backup', sanitize_text_field($attachment['ai_auto_alt_backup']));
+    }
+    return $post;
+}
+add_filter('attachment_fields_to_save', 'ai_auto_alt_backup_field_to_attachment_save', 10, 2);

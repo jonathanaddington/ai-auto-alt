@@ -1,10 +1,31 @@
-# AI Auto Alt
+# AI Auto Alt Text
 
-## Introduction
+Make your website more accessible to visually impaired users with the AI Auto Alt Text plugin for WordPress. Powered by advanced artificial intelligence, this innovative plugin automatically generates descriptive alt text for images as they're uploaded, ensuring that your content is more inclusive and SEO-friendly.
 
-This is a simple Wordpress plugin to use OpenAI to generate alt text for images. It uses the [OpenAI API](https://platform.openai.com/) to generate the alt text. The plugin is currently in beta.
+## Features:
 
-You need your own OpenAI API key to use this plugin.
+- **Automatic Alt Text Generation**: When an image is uploaded to your media library, AI Auto Alt Text leverages OpenAI's latest models to create accurate and contextually relevant alt descriptions.
+- **Support for Multiple Image Types**: The plugin works with various image formats including JPG, PNG, GIF, and more, making it versatile for all your media needs.
+- **EXIF Data Analysis**: Gain more meaningful descriptions by using image metadata (EXIF) for an enhanced understanding of each image, when available.
+- **Fully Customizable Prompts**: Adjust the AI prompts to tailor alt text generation to your specific needs and the context of your website.
+- **Advanced Settings**: Fine-tune the AI response with settings like temperature control, top P value, and max token limit to achieve the desired level of creativity and specificity.
+
+## Benefits:
+
+- **Improved Accessibility**: Assists visually impaired users by providing detailed image descriptions as they navigate through your site with screen readers.
+- **SEO Boost**: Better alt text can improve image searchability and overall SEO performance.
+- **Time-saving Automation**: Reduce manual effort in creating alt text for every image — let AI handle it efficiently.
+- **Enhanced User Experience**: Provide a richer browsing experience with informative image descriptions, fulfilling the needs of all users.
+
+## How it Works:
+
+Upon activation, the plugin listens for media upload events and utilizes OpenAI's powerful model to generate alt text. It's smart enough to include filename and EXIF data in its analysis for more precise and appropriate alt text suggestions. Options can be set in the plugin's settings page, where you can input your OpenAI API key and adjust various parameters to customize the AI's behavior.
+
+## Getting Started:
+
+1. Install and activate AI Auto Alt Text.
+2. Configure your OpenAI API settings in the plugin's settings page.
+3. Start uploading images and watch as alt text is automatically generated.
 
 # About this project
 

@@ -14,12 +14,37 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
 
     error_log('ai_auto_alt_media_upload_hook triggered for attachment ID ' . $attachment_id);
 
-    // Get the full URL to the image
-    $attachment_url = wp_get_attachment_url($attachment_id);
-
     // Retrieve the plugin settings
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     $prompt = $options['OPENAI_PROMPT'];
+
+    // Get the full URL to the image
+    $attachment_url = wp_get_attachment_url($attachment_id);
+    $attachment_url = "https://upload.wikimedia.org/wikipedia/commons/3/3e/Nubian_houses.jpg?download";
+
+    // Get the full path to the image file on the server
+    $attachment_path = get_attached_file($attachment_id);
+
+    // Get the filename of the image from its URL
+    $filename = basename($attachment_url);
+    $prompt .= "\n\nImage filename: " . $filename;
+
+
+    // Attempt to get the EXIF data if the file is a JPG or TIFF
+    $exif_data = '';
+    if (in_array(strtolower(pathinfo($attachment_path, PATHINFO_EXTENSION)), array('jpg', 'jpeg', 'tiff', 'tif'))) {
+        $exif = wp_read_image_metadata($attachment_path);
+        error_log('Image filename: ' . $filename . ' | EXIF Data: ' . $exif_data);
+
+        if ($exif) {
+            $exif_data = json_encode($exif); // Convert EXIF data to JSON string
+            // Optionally you can create a formatted string of EXIF details that you're interested in.
+            // For example: $exif_data = "Camera: {$exif['camera']}, ISO: {$exif['iso']}...";
+            // Remember to sanitize any data appropriately.
+
+            $prompt .= "I have some EXIF data to share, if it helps. \n\nEXIF Data: " . $exif_data;
+        }
+    }
 
     // Example prompt from OpenAI docs
     /*
@@ -63,7 +88,7 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
                     ],
                     [
                         'type' => 'image_url',
-                        'image_url' => "https://upload.wikimedia.org/wikipedia/commons/3/3e/Nubian_houses.jpg?download"  // Directly passing the URL
+                        'image_url' => $attachment_url  // Directly passing the URL
                     ]
                 ]
             ],
@@ -199,8 +224,19 @@ function ai_auto_alt_activate() {
         'OPENAI_API_KEY' => '',
         'OPENAI_MODEL' => 'gpt-4-vision-preview',
         'MEDIA_ATTACHMENT_TYPES' => array('jpg', 'jpeg', 'png', 'gif', 'webp'),
-        'OPENAI_PROMPT' => "You are an expert in web development for the visually impaired. I am going to give you an image I want you to generate alternate text for. This is expressly to help visually impaired persons navigate the website, so you should focus on text that explains what the image does and the context of it, rather than long verbose descriptions.\n\nPlease review your work before returning text."
-    );
+        'OPENAI_PROMPT' => <<<EOD
+        You are an expert in web development for the visually impaired. I am going to give you an image I want you to
+        generate alternate text for. This is expressly to help visually impaired persons navigate the website,
+        so you should focus on text that explains what the image does and the context of it, rather than long 
+        verbose descriptions.
+
+        You will receive the image filename, as well as any EXIF data that is available. You can 
+        use this or ignore it as you see fit. Just make sure that the alt text is relevant to the image.
+        Remember, you are the expert here.
+        
+        Please review your work before returning text.
+
+        EOD    );
     
     // Add default settings to the database if they don't already exist
     if (!get_option(PLUGIN_NAMESPACE . '_settings')) {

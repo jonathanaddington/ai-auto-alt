@@ -470,13 +470,13 @@ function ai_auto_alt_settings_validate($input) {
     // Validate OpenAI API Key
     if (isset($input['OPENAI_API_KEY'])) {
         $new_input['OPENAI_API_KEY'] = sanitize_text_field($input['OPENAI_API_KEY']);
-        // API Key should be 54 characters long
+        // API Key should be 51 characters long
 
-        if (strlen($new_input['OPENAI_API_KEY']) != 54) {
+        if (strlen($new_input['OPENAI_API_KEY']) != 51) {
             add_settings_error(
                 PLUGIN_NAMESPACE . '_settings',
                 'invalid-api-key',
-                'OpenAI API Key must be 54 characters long.'
+                'OpenAI API Key must be 51 characters long.'
             );
         }
 

@@ -439,7 +439,7 @@ function ai_auto_alt_display_settings() {
 
 // Validation callback function
 function ai_auto_alt_settings_validate($input) {
-    $new_input = array();
+    $new_input = get_option(PLUGIN_NAMESPACE . '_settings');
 
     $valid_models = array('gpt-4-vision-preview'); // Specify valid models
     

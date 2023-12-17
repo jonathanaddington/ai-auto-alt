@@ -152,5 +152,3 @@ function ai_auto_alt_display_settings() {
     </div>
     <?php
 }
-
-// Callback functions for rendering settings fields should be added here

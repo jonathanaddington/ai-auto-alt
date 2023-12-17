@@ -11,7 +11,20 @@ define( 'PLUGIN_NAMESPACE', 'ai_auto_alt' );
 
 // Hook for when a media file is uploaded
 function ai_auto_alt_media_upload_hook( $attachment_id ) {
-    // Your code to execute when a media file is uploaded
+
+    // Get the full URL to the image
+    $attachment_url = wp_get_attachment_url($attachment_id);
+
+    // Retrieve the plugin settings
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    $prompt_template = $options['OPENAI_PROMPT'];
+
+    // Replace {{URL}} with the actual attachment URL
+    $prompt = str_replace('{{URL}}', $attachment_url, $prompt_template);
+
+    // Now you can use $prompt for further processing
+    // Your code to use the prompt goes here
+
 }
 
 add_action( 'add_attachment', PLUGIN_NAMESPACE . '_media_upload_hook' );

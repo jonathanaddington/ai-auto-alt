@@ -27,9 +27,9 @@ You'll notice that there are some extensive comments in the code straight from O
 ChatGPT in its responses, as well as GitHub co-pilot. My experience in other development is that
 the response quality goes up significantly when you give it a lot of context.
 
-*It was fast* Even simple things that are easily in my skillset went so much faster. In commit `649e2abe3804108ba46694cf5c239e17a30b2aef` I asked OpenAI:
+*It was fast* Even simple things that are easily in my skill-set went so much faster. In commit `649e2abe3804108ba46694cf5c239e17a30b2aef` I asked OpenAI:
 
-```shell
+```bash
 Add descriptions in each option here:
 [code inserted]
 ```
@@ -60,9 +60,9 @@ local bind mount is located at `wordpress/wp-content/plugins/ai-auto-alt`.
 
 The rest of the Wordpress directory does not have a local bind mount.
 
-The directoy `dev/data/db` is used to store the database for the local Wordpress instance. It also
+The directory `dev/data/db` is used to store the database for the local Wordpress instance. It also
 has a local bind mount to the container and will persist across restarts. The initial Wordpress
-directory is commited to the repository so you can start the local instance without any additional
+directory is committed to the repository so you can start the local instance without any additional
 setup. No other commits to the Wordpress directory should be made.
 
 The initial db commit is copied to `dev/data/db.zip` in case the db folder has a new commit it

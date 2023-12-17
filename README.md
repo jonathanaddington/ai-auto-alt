@@ -21,3 +21,10 @@ wasn't suppose to have.
 
 The Wordpress admin page is at [http://localhost:8080/wp-admin](http://localhost:8000/wp-admin). The login is
 `ai-auto-alt:ai-auto-alt`
+
+### Local Debug Mode
+If this is set, the file `dev/images/images.md` will be used for an attachment URL instead of the
+real uploaded attachment. This allows for local development when public access to the development
+environment is not available.
+
+The image URLs are all from Wikimedia Commons and are licensed without restrictions. 

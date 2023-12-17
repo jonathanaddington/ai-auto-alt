@@ -173,6 +173,14 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
 
         // Check if the response contains the expected data
         if (isset($response_data['choices'][0]['message']['content'])) {
+
+            // Check for existing alt text and back it up
+            $existing_alt_text = get_post_meta($attachment_id, '_wp_attachment_image_alt', true);
+            if (!empty($existing_alt_text)) {
+                // Save existing alt text to the custom field 'AI Auto Alt Backup'
+                update_post_meta($attachment_id, 'ai_auto_alt_backup', sanitize_text_field($existing_alt_text));
+            }
+
             // Do something with the response
             $alt_text = $response_data['choices'][0]['message']['content'];
             // Update the attachment post with the alt text

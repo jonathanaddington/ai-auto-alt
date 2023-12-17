@@ -15,9 +15,16 @@ services:
     
     # The development environment is mounted to the local directory for faster development
     volumes:
-      - ../wordpress:/var/www/html  # Mount the entire WordPress directory
+      - ./wordpress:/var/www/html  # Mount the entire WordPress directory
+
+      # Mount our plugin under development
       - ../wordpress/wp-content/plugins/ai-auto-alt:/var/www/html/wp-content/plugins/ai-auto-alt
+
+      # Mount the wp-config.php file to be editable outside of the container
       - ../wordpress/wp-config.php:/var/www/html/wp-config.php
+
+      # Mount the debug log
+      - ../wordpress/wp-content/debug.log:/var/www/html/wp-content/debug.log
 
   db:
     image: mariadb:11.2.2

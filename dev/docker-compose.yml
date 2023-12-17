@@ -1,0 +1,36 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ai-alt-text
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: wp_db
+    
+    # The development environment is mounted to the local directory for faster development
+    volumes:
+      - ../wordpress/wp-content/plugins/ai-auto-alt:/var/www/html/wp-content/plugins/ai-auto-alt
+
+  db:
+    image: mariadb:11.2.2
+    restart: always
+    environment:
+      MARIADB_DATABASE: wp_auto_alt_db
+      MARIADB_USER: ai-alt-text_user
+      MARIADB_PASSWORD: ai-auto-alt_password
+      MARIADB_ROOT_PASSWORD: ai-auto-alt
+
+    # The development database is mounted to the local directory
+    # In general this directory should not have updated commits
+    volumes:
+      - ./data/db:/var/lib/mysql
+
+volumes:
+  wordpress:
+  db:

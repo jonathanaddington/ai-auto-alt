@@ -269,7 +269,7 @@ function ai_auto_alt_register_settings() {
         PLUGIN_NAMESPACE . '_advanced_settings_section',
         array('label_for' => 'ai_auto_alt_images_md_path')
     );
-    
+
     add_settings_field(
         'ai_auto_alt_openai_max_tokens',
         'OpenAI Max Tokens',
@@ -557,3 +557,17 @@ function ai_auto_alt_backup_field_to_attachment_save( $post, $attachment ) {
     return $post;
 }
 add_filter('attachment_fields_to_save', 'ai_auto_alt_backup_field_to_attachment_save', 10, 2);
+
+/**
+ * Adds a settings link to the plugins page.
+ *
+ * @param array $links An array of action links.
+ * @return array Modified array of action links.
+ */
+function ai_auto_alt_add_settings_link( $links ) {
+    $settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=' . PLUGIN_NAMESPACE ) ) . '">' . esc_html__( 'Settings', 'ai-auto-alt' ) . '</a>';
+    array_unshift( $links, $settings_link );
+    return $links;
+}
+
+add_filter( 'plugin_action_links_ai-auto-alt/ai-auto-alt.php', 'ai_auto_alt_add_settings_link' );

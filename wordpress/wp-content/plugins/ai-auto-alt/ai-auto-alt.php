@@ -12,6 +12,8 @@ define( 'PLUGIN_NAMESPACE', 'ai_auto_alt' );
 // Hook for when a media file is uploaded
 function ai_auto_alt_media_upload_hook( $attachment_id ) {
 
+    error_log('ai_auto_alt_media_upload_hook triggered for attachment ID ' . $attachment_id);
+
     // Get the full URL to the image
     $attachment_url = wp_get_attachment_url($attachment_id);
 
@@ -97,6 +99,8 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     // Encode the request data
     $request_data_json = json_encode($request_data);
 
+    error_log('Sending request to OpenAI: ' . $request_data_json);
+
     // Create the PHP request
     $request = wp_remote_post(
         'https://api.openai.com/v1/chat/completions',
@@ -114,10 +118,13 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
         // Handle error
         $error_message = $request->get_error_message();
         // Log or notify the error
+        error_log('OpenAI request error: ' . $error_message);
+
     } else {
         $response_body = wp_remote_retrieve_body($request);
         $response_data = json_decode($response_body, true);
-        
+        error_log('OpenAI response: ' . $response_body);
+
         // Check if the response contains the expected data
         if (isset($response_data['choices'][0]['message']['content'])) {
             // Do something with the response
@@ -131,7 +138,7 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
 
 }
 
-add_action( 'add_attachment', PLUGIN_NAMESPACE . '_media_upload_hook' );
+add_action( 'add_attachment', 'ai_auto_alt_media_upload_hook' );
 
 // Register settings and fields
 function ai_auto_alt_register_settings() {

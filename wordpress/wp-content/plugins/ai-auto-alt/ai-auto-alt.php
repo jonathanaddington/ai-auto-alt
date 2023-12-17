@@ -17,10 +17,117 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
 
     // Retrieve the plugin settings
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
-    $prompt_template = $options['OPENAI_PROMPT'];
+    $prompt = $options['OPENAI_PROMPT'];
 
-    // Now you can use $prompt for further processing
-    // Your code to use the prompt goes here
+    // Example prompt from OpenAI docs
+    /*
+    curl https://api.openai.com/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -d '{
+        "model": "gpt-4-vision-preview",
+        "messages": [
+        {
+            "role": "user",
+            "content": [
+            {
+                "type": "text",
+                "text": "What’s in this image?"
+            },
+            {
+                "type": "image_url",
+                "image_url": {
+                "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                }
+            }
+            ]
+        }
+        ],
+        "max_tokens": 300
+    }'
+    */
+
+    // Create the API request
+    // Create the prompt
+    $request_data = array(
+        'model' => $options['OPENAI_MODEL'],
+        'messages' => array(
+            array(
+                'role' => 'user',
+                'content' => $prompt  // Using the filled prompt
+            ),
+            array(
+                'role' => 'system',
+                'content' => 'An image URL is provided for analysis'
+            ),
+            array(
+                'role' => 'user',
+                'content' => $attachment_url  // Directly passing the URL
+            )
+        ),
+        'max_tokens' => 500
+    );
+
+    /* Sample return data based on the OpenAI docs
+
+    {
+        "id": "chatcmpl-123",
+        "object": "chat.completion",
+        "created": 1677652288,
+        "model": "gpt-3.5-turbo-0613",
+        "system_fingerprint": "fp_44709d6fcb",
+        "choices": [{
+            "index": 0,
+            "message": {
+            "role": "assistant",
+            "content": "\n\nHello there, how may I assist you today?",
+            },
+            "logprobs": null,
+            "finish_reason": "stop"
+        }],
+        "usage": {
+            "prompt_tokens": 9,
+            "completion_tokens": 12,
+            "total_tokens": 21
+        }
+    }
+
+    */
+
+    // Encode the request data
+    $request_data_json = json_encode($request_data);
+
+    // Create the PHP request
+    $request = wp_remote_post(
+        'https://api.openai.com/v1/chat/completions',
+        array(
+            'headers' => array(
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $options['OPENAI_API_KEY']
+            ),
+            'body' => $request_data_json
+        )
+    );
+
+        // Handle the response
+    if (is_wp_error($request)) {
+        // Handle error
+        $error_message = $request->get_error_message();
+        // Log or notify the error
+    } else {
+        $response_body = wp_remote_retrieve_body($request);
+        $response_data = json_decode($response_body, true);
+        
+        // Check if the response contains the expected data
+        if (isset($response_data['choices'][0]['message']['content'])) {
+            // Do something with the response
+            $alt_text = $response_data['choices'][0]['message']['content'];
+            // Update the attachment post with the alt text
+            update_post_meta($attachment_id, '_wp_attachment_image_alt', sanitize_text_field($alt_text));
+        } else {
+            // Handle unexpected response
+        }
+    }
 
 }
 

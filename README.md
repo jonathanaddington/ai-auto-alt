@@ -27,7 +27,29 @@ You'll notice that there are some extensive comments in the code straight from O
 ChatGPT in its responses, as well as GitHub co-pilot. My experience in other development is that
 the response quality goes up significantly when you give it a lot of context.
 
+*It was fast* Even simple things that are easily in my skillset went so much faster. In commit `649e2abe3804108ba46694cf5c239e17a30b2aef` I asked OpenAI:
+
+```
+Add descriptions in each option here:
+[code inserted]
+```
+
+and outputted the rest of the diff instantly. 
+
 ![Alt text](image.png)
+
+## Lessons
+*Give lots of context* - I found that the quality of the responses went up significantly when I gave
+it a lot of context. I would regularly paste in the entire file so it was all in the context window.
+I also uploaded the readme.md file to the playground and had it generate the entire file.
+
+*Git is great*  - Being able to examine the diff of the code sped up development significantly because
+I could compare the previous code to ChatGPT's response and easily see if it made sense. Kind of like
+a PR review..
+
+*It isn't on autopilot yet* - My development experience in other fields and ancient PHP experience was
+still more or less required, but it was mostly in the small things, such as OpenAI not properly creating
+a JSON object for the API.
 
 # Development
 
@@ -47,19 +69,6 @@ wasn't suppose to have.
 
 The Wordpress admin page is at [http://localhost:8080/wp-admin](http://localhost:8000/wp-admin). The login is
 `ai-auto-alt:ai-auto-alt`
-
-## Lessons
-*Give lots of context* - I found that the quality of the responses went up significantly when I gave
-it a lot of context. I would regularly paste in the entire file so it was all in the context window.
-I also uploaded the readme.md file to the playground and had it generate the entire file.
-
-*Git is great*  - Being able to examine the diff of the code sped up development significantly because
-I could compare the previous code to ChatGPT's response and easily see if it made sense. Kind of like
-a PR review..
-
-*It isn't on autopilot yet* - My development experience in other fields and ancient PHP experience was
-still more or less required, but it was mostly in the small things, such as OpenAI not properly creating
-a JSON object for the API.
 
 ## Local Debug Mode
 

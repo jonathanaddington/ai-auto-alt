@@ -18,9 +18,26 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     $prompt = $options['OPENAI_PROMPT'];
 
-    // Get the full URL to the image
-    $attachment_url = wp_get_attachment_url($attachment_id);
-    $attachment_url = "https://upload.wikimedia.org/wikipedia/commons/3/3e/Nubian_houses.jpg?download";
+    // Allow for local debugging, where a public URL is not available, so we use a local file
+    // with a list of URLs to use for testing.
+    if (isset($options['AI_AUTO_ALT_LOCAL_DEBUG']) && $options['AI_AUTO_ALT_LOCAL_DEBUG']) {
+        $images_md_path = '/var/www/html/wp-content/uploads/2020/01/images.md';
+        if ( file_exists($images_md_path) ) {
+            $lines = file($images_md_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            if ($lines) {
+                $random_line = $lines[array_rand($lines)];
+                $attachment_url = trim($random_line); // Assume each line contains only a single URL
+            } else {
+                error_log('The images.md file is empty or could not be read.');
+            }
+        } else {
+            error_log('The images.md file does not exist at the specified location.');
+        }
+    } else {
+        // Get the full URL to the image
+        $attachment_url = wp_get_attachment_url($attachment_id);
+        $attachment_url = "https://upload.wikimedia.org/wikipedia/commons/3/3e/Nubian_houses.jpg?download";
+    }
 
     // Get the full path to the image file on the server
     $attachment_path = get_attached_file($attachment_id);
@@ -236,7 +253,9 @@ function ai_auto_alt_activate() {
         
         Please review your work before returning text.
 
-        EOD    );
+        EOD,
+        'AI_AUTO_ALT_LOCAL_DEBUG' => false,
+        );
     
     // Add default settings to the database if they don't already exist
     if (!get_option(PLUGIN_NAMESPACE . '_settings')) {
@@ -286,16 +305,21 @@ function ai_auto_alt_openai_prompt_cb() {
     echo '<textarea id="ai_auto_alt_openai_prompt" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_PROMPT]" rows="5" cols="50" class="large-text code">' . esc_textarea($prompt) . '</textarea>';
 }
 
-// Remember to add these callback functions to the respective add_settings_field calls
+function ai_auto_alt_local_debug_cb() {
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    $local_debug_checked = isset($options['AI_AUTO_ALT_LOCAL_DEBUG']) ? 'checked' : '';
+    echo '<input id="ai_auto_alt_local_debug" name="' . PLUGIN_NAMESPACE . '_settings[AI_AUTO_ALT_LOCAL_DEBUG]" type="checkbox" ' . $local_debug_checked . ' value="1">';
+}
 
 // Function to create settings page
 function ai_auto_alt_settings_page() {
-    add_options_page(
-        'AI Auto Alt Settings',
-        'AI Auto Alt',
-        'manage_options',
-        PLUGIN_NAMESPACE . '_settings',
-        'ai_auto_alt_display_settings'
+    add_settings_field(
+        'ai_auto_alt_local_debug',
+        'Local Debug Mode',
+        'ai_auto_alt_local_debug_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_settings_section',
+        array('label_for' => 'ai_auto_alt_local_debug')
     );
 }
 

@@ -36,7 +36,6 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     } else {
         // Get the full URL to the image
         $attachment_url = wp_get_attachment_url($attachment_id);
-        $attachment_url = "https://upload.wikimedia.org/wikipedia/commons/3/3e/Nubian_houses.jpg?download";
     }
 
     // Get the full path to the image file on the server

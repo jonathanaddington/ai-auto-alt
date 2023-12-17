@@ -109,7 +109,9 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
                 ]
             ],
         ],
-        'max_tokens' => 500
+        'temperature' => $options['OPENAI_TEMPERATURE'],
+        'top_p' => $options['OPENAI_TOP_P'],
+        'max_tokens' => $options['OPEN_AI_MAX_TOKENS']
     ];
 
     /* Sample return data based on the OpenAI docs
@@ -247,6 +249,15 @@ function ai_auto_alt_register_settings() {
     );
 
     add_settings_field(
+        'ai_auto_alt_openai_max_tokens',
+        'OpenAI Max Tokens',
+        'ai_auto_alt_openai_max_tokens_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_settings_section' // Assuming you're adding to the main settings section
+    );
+
+
+    add_settings_field(
         'ai_auto_alt_openai_temperature',
         'OpenAI Temperature',
         'ai_auto_alt_openai_temperature_cb',
@@ -290,6 +301,7 @@ function ai_auto_alt_activate() {
         'AI_AUTO_ALT_IMAGES_MD_PATH' => '/var/www/html/wp-content/uploads/2020/01/images.md', // Default path setting
         'OPENAI_TEMPERATURE' => 0.7, // Suitable default value for 'temperature'
         'OPENAI_TOP_P' => 1.0, // Suitable default value for 'top_p'    
+        'OPEN_AI_MAX_TOKENS' => 500 // Suitable default value for 'max_tokens
     );
     
     // Add default settings to the database if they don't already exist
@@ -355,6 +367,13 @@ function ai_auto_alt_openai_top_p_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     echo '<input id="ai_auto_alt_openai_top_p" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_TOP_P]" type="number" step="0.01" min="0" max="1" value="' . esc_attr($options['OPENAI_TOP_P']) . '" class="regular-text" />';
     echo '<p class="description">Controls diversity via nucleus sampling: 0.5 means half of all likelihood-weighted options are considered.</p>';
+}
+
+//Callback for the OpenAI Max Tokens field
+function ai_auto_alt_openai_max_tokens_cb() {
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    echo '<input id="ai_auto_alt_openai_max_tokens" name="' . PLUGIN_NAMESPACE . '_settings[OPEN_AI_MAX_TOKENS]" type="number" step="1" min="1" max="2048" value="' . esc_attr($options['OPEN_AI_MAX_TOKENS']) . '" class="regular-text" />';
+    echo '<p class="description">The maximum number of tokens to generate (range 1-4096). 4096 would be excessive :P</p>';
 }
 
 function ai_auto_alt_local_debug_cb() {

@@ -41,8 +41,9 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     // Get the full path to the image file on the server
     $attachment_path = get_attached_file($attachment_id);
 
-    // Get the filename of the image from its URL
+    // Get the filename of the image from its URL and sanitize it
     $filename = basename($attachment_url);
+    $filename = sanitize_file_name($filename);
     $prompt .= "\n\nImage filename: " . $filename;
 
 
@@ -50,14 +51,14 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     $exif_data = '';
     if (in_array(strtolower(pathinfo($attachment_path, PATHINFO_EXTENSION)), array('jpg', 'jpeg', 'tiff', 'tif'))) {
         $exif = wp_read_image_metadata($attachment_path);
-        error_log('Image filename: ' . $filename . ' | EXIF Data: ' . $exif_data);
-
+        error_log('Image filename: ' . $filename . ' | EXIF Data: ' . maybe_serialize($exif)); // Serialize to store or log the entire array
+        
         if ($exif) {
-            $exif_data = json_encode($exif); // Convert EXIF data to JSON string
-            // Optionally you can create a formatted string of EXIF details that you're interested in.
-            // For example: $exif_data = "Camera: {$exif['camera']}, ISO: {$exif['iso']}...";
-            // Remember to sanitize any data appropriately.
-
+            // Sanitize each EXIF data field
+            foreach ($exif as $key => $value) {
+                $exif[$key] = sanitize_text_field($value);
+            }
+            $exif_data = json_encode($exif); // Convert sanitized EXIF data to JSON string
             $prompt .= "I have some EXIF data to share, if it helps. \n\nEXIF Data: " . $exif_data;
         }
     }
@@ -297,6 +298,9 @@ function ai_auto_alt_activate() {
         You will receive the image filename, as well as any EXIF data that is available. You can 
         use this or ignore it as you see fit. Just make sure that the alt text is relevant to the image.
         Remember, you are the expert here.
+
+        Also, please check that you do not return anything that could be a security risk. For example, XSS attacks
+        or SQL injection or executable code. EXIF data is not sanitized, so please be careful.
         
         Please review your work before returning text.
 

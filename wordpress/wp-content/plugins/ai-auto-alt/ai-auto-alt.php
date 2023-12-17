@@ -262,6 +262,15 @@ function ai_auto_alt_register_settings() {
     );
 
     add_settings_field(
+        'ai_auto_alt_local_debug',
+        'Turn on local debugging mode',
+        'ai_auto_alt_local_debug_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_advanced_settings_section',
+        array('label_for' => 'ai_auto_alt_images_md_path')
+    );
+    
+    add_settings_field(
         'ai_auto_alt_openai_max_tokens',
         'OpenAI Max Tokens',
         'ai_auto_alt_openai_max_tokens_cb',

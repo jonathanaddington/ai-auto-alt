@@ -29,16 +29,17 @@ the response quality goes up significantly when you give it a lot of context.
 
 *It was fast* Even simple things that are easily in my skillset went so much faster. In commit `649e2abe3804108ba46694cf5c239e17a30b2aef` I asked OpenAI:
 
-```
+```shell
 Add descriptions in each option here:
 [code inserted]
 ```
 
-and outputted the rest of the diff instantly. 
+and outputted the rest of the diff instantly.
 
 ![Alt text](image.png)
 
 ## Lessons
+
 *Give lots of context* - I found that the quality of the responses went up significantly when I gave
 it a lot of context. I would regularly paste in the entire file so it was all in the context window.
 I also uploaded the readme.md file to the playground and had it generate the entire file.

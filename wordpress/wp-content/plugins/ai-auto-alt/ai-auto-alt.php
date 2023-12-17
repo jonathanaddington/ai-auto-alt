@@ -312,15 +312,16 @@ function ai_auto_alt_local_debug_cb() {
 
 // Function to create settings page
 function ai_auto_alt_settings_page() {
-    add_settings_field(
-        'ai_auto_alt_local_debug',
-        'Local Debug Mode',
-        'ai_auto_alt_local_debug_cb',
-        PLUGIN_NAMESPACE,
-        PLUGIN_NAMESPACE . '_settings_section',
-        array('label_for' => 'ai_auto_alt_local_debug')
+    add_options_page(
+        'AI Auto Alt Settings',      // The text to be displayed in the title tags of the page when the menu is selected
+        'AI Auto Alt',               // The text to be used for the menu
+        'manage_options',            // The capability required for this menu to be displayed to the user
+        PLUGIN_NAMESPACE,            // The slug name to refer to this menu by (should be unique for this menu)
+        'ai_auto_alt_display_settings' // The function to be called to output the content for this page
     );
 }
+
+add_action('admin_menu', 'ai_auto_alt_settings_page');
 
 add_action( 'admin_menu', 'ai_auto_alt_settings_page' );
 

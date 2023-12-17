@@ -31,3 +31,6 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+# Ignore WordPress bind mounted directory
+dev/wordpress

@@ -187,7 +187,11 @@ add_action( 'add_attachment', 'ai_auto_alt_media_upload_hook' );
 
 // Register settings and fields
 function ai_auto_alt_register_settings() {
-    register_setting(PLUGIN_NAMESPACE . '_options_group', PLUGIN_NAMESPACE . '_settings');
+    register_setting(
+        PLUGIN_NAMESPACE . '_options_group', // Option group
+        PLUGIN_NAMESPACE . '_settings',     // Option name
+        'ai_auto_alt_settings_validate'     // Validation callback function
+    );
 
     add_settings_section(
         PLUGIN_NAMESPACE . '_settings_section',
@@ -419,4 +423,92 @@ function ai_auto_alt_display_settings() {
         </form>
     </div>
     <?php
+}
+
+// Validation callback function
+function ai_auto_alt_settings_validate($input) {
+    $new_input = array();
+
+    $valid_models = array('gpt-4-vision-preview'); // Specify valid models
+    
+    // Validate OpenAI Model
+    if (isset($input['OPENAI_MODEL'])) {
+        $new_input['OPENAI_MODEL'] = sanitize_text_field($input['OPENAI_MODEL']);
+        // Check if the model is in the list of known valid models
+        if (!in_array($new_input['OPENAI_MODEL'], $valid_models)) {
+            // Issue a warning that the model might not be correct
+            add_settings_error(
+                PLUGIN_NAMESPACE . '_settings',
+                'possibly-invalid-model',
+                'Warning: The specified OpenAI Model may not be supported or may not be updated in the plugin. If this model name is indeed correct and recently released, please disregard this message. Otherwise, double-check the model name.',
+                'warning' // Set the type to "warning" instead of "error"
+            );
+        }
+    } else {
+        // If no model is provided, set a default model to avoid errors
+        $new_input['OPENAI_MODEL'] = $valid_models[0];
+        add_settings_error(
+            PLUGIN_NAMESPACE . '_settings',
+            'default-model-used',
+            'No OpenAI Model provided. Using the default: ' . $valid_models[0] . '.',
+            'info' // Set the type to "info" to indicate informative message
+        );
+    }
+
+    // Validate OpenAI API Key
+    if (isset($input['OPENAI_API_KEY'])) {
+        $new_input['OPENAI_API_KEY'] = sanitize_text_field($input['OPENAI_API_KEY']);
+        // API Key should be 54 characters long
+
+        if (strlen($new_input['OPENAI_API_KEY']) != 54) {
+            add_settings_error(
+                PLUGIN_NAMESPACE . '_settings',
+                'invalid-api-key',
+                'OpenAI API Key must be 54 characters long.'
+            );
+        }
+
+        //Check for alphanumeric characters, allow only a dash
+        if (!preg_match('/^[a-zA-Z0-9-]+$/', $new_input['OPENAI_API_KEY'])) {
+            add_settings_error(
+                PLUGIN_NAMESPACE . '_settings',
+                'invalid-api-key',
+                'OpenAI API Key must contain only alphanumeric characters and dashes.'
+            );
+        }
+    }
+
+    // Validate OpenAI Prompt
+    if (isset($input['OPENAI_PROMPT'])) {
+        $new_input['OPENAI_PROMPT'] = sanitize_textarea_field($input['OPENAI_PROMPT']);
+        // Additional validation can be added if needed, for example, restrict the length
+    }
+
+    // Validate OpenAI Temperature
+    if (isset($input['OPENAI_TEMPERATURE'])) {
+        // Ensure input is a float between 0 and 1
+        $new_input['OPENAI_TEMPERATURE'] = floatval(sanitize_text_field($input['OPENAI_TEMPERATURE']));
+        if ($new_input['OPENAI_TEMPERATURE'] < 0 || $new_input['OPENAI_TEMPERATURE'] > 1) {
+            add_settings_error(
+                PLUGIN_NAMESPACE . '_settings',
+                'invalid-temperature',
+                'OpenAI Temperature must be between 0 and 1.'
+            );
+        }
+    }
+
+    // Validate OpenAI Top P
+    if (isset($input['OPENAI_TOP_P'])) {
+        // Ensure input is a float between 0 and 1
+        $new_input['OPENAI_TOP_P'] = floatval(sanitize_text_field($input['OPENAI_TOP_P']));
+        if ($new_input['OPENAI_TOP_P'] < 0 || $new_input['OPENAI_TOP_P'] > 1) {
+            add_settings_error(
+                PLUGIN_NAMESPACE . '_settings',
+                'invalid-top_p',
+                'OpenAI Top P must be between 0 and 1.'
+            );
+        }
+    }
+
+    return $new_input;
 }

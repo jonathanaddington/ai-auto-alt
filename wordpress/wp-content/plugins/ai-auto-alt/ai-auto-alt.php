@@ -51,24 +51,25 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
 
     // Create the API request
     // Create the prompt
-    $request_data = array(
+    $request_data = [
         'model' => $options['OPENAI_MODEL'],
-        'messages' => array(
-            array(
+        'messages' => [
+            [
                 'role' => 'user',
-                'content' => $prompt  // Using the filled prompt
-            ),
-            array(
-                'role' => 'system',
-                'content' => 'An image URL is provided for analysis'
-            ),
-            array(
-                'role' => 'user',
-                'content' => $attachment_url  // Directly passing the URL
-            )
-        ),
+                'content' => [
+                    [
+                        'type' => 'text',
+                        'text' => $prompt  // Using the filled prompt
+                    ],
+                    [
+                        'type' => 'image_url',
+                        'image_url' => $attachment_url  // Directly passing the URL
+                    ]
+                ]
+            ],
+        ],
         'max_tokens' => 500
-    );
+    ];
 
     /* Sample return data based on the OpenAI docs
 

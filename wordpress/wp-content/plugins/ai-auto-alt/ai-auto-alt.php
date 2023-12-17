@@ -21,7 +21,7 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     // Allow for local debugging, where a public URL is not available, so we use a local file
     // with a list of URLs to use for testing.
     if (isset($options['AI_AUTO_ALT_LOCAL_DEBUG']) && $options['AI_AUTO_ALT_LOCAL_DEBUG']) {
-        $images_md_path = '/var/www/html/wp-content/uploads/2020/01/images.md';
+        $images_md_path = isset($options['AI_AUTO_ALT_IMAGES_MD_PATH']) ? $options['AI_AUTO_ALT_IMAGES_MD_PATH'] : '/var/www/html/wp-content/uploads/2020/01/images.md';
         if ( file_exists($images_md_path) ) {
             $lines = file($images_md_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             if ($lines) {
@@ -229,6 +229,22 @@ function ai_auto_alt_register_settings() {
         PLUGIN_NAMESPACE . '_settings_section',
         array('label_for' => 'ai_auto_alt_openai_prompt')
     );
+
+    add_settings_section(
+        PLUGIN_NAMESPACE . '_advanced_settings_section',
+        'AI Auto Alt Advanced Settings',
+        'ai_auto_alt_advanced_settings_section_cb',
+        PLUGIN_NAMESPACE
+    );
+
+    add_settings_field(
+        'ai_auto_alt_images_md_path',
+        'Images Markdown Path',
+        'ai_auto_alt_images_md_path_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_advanced_settings_section',
+        array('label_for' => 'ai_auto_alt_images_md_path')
+    );
 }
 
 add_action('admin_init', 'ai_auto_alt_register_settings');
@@ -254,6 +270,7 @@ function ai_auto_alt_activate() {
 
         EOD,
         'AI_AUTO_ALT_LOCAL_DEBUG' => false,
+        'AI_AUTO_ALT_IMAGES_MD_PATH' => '/var/www/html/wp-content/uploads/2020/01/images.md', // Default path setting
         );
     
     // Add default settings to the database if they don't already exist
@@ -310,6 +327,16 @@ function ai_auto_alt_local_debug_cb() {
     echo '<input id="ai_auto_alt_local_debug" name="' . PLUGIN_NAMESPACE . '_settings[AI_AUTO_ALT_LOCAL_DEBUG]" type="checkbox" ' . $local_debug_checked . ' value="1">';
 }
 
+function ai_auto_alt_images_md_path_cb() {
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    echo '<input id="ai_auto_alt_images_md_path" name="' . PLUGIN_NAMESPACE . '_settings[AI_AUTO_ALT_IMAGES_MD_PATH]" type="text" value="' . esc_attr($options['AI_AUTO_ALT_IMAGES_MD_PATH']) . '" class="regular-text" />';
+}
+
+// Define the callback function if you have an advanced settings section:
+function ai_auto_alt_advanced_settings_section_cb() {
+    echo '<p>Advanced settings for the AI Auto Alt plugin:</p>';
+}
+
 // Function to create settings page
 function ai_auto_alt_settings_page() {
     add_options_page(
@@ -322,8 +349,6 @@ function ai_auto_alt_settings_page() {
 }
 
 add_action('admin_menu', 'ai_auto_alt_settings_page');
-
-add_action( 'admin_menu', 'ai_auto_alt_settings_page' );
 
 // Display function for the settings page content
 function ai_auto_alt_display_settings() {

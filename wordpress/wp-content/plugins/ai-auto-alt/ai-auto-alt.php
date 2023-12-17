@@ -19,9 +19,6 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     $prompt_template = $options['OPENAI_PROMPT'];
 
-    // Replace {{URL}} with the actual attachment URL
-    $prompt = str_replace('{{URL}}', $attachment_url, $prompt_template);
-
     // Now you can use $prompt for further processing
     // Your code to use the prompt goes here
 
@@ -86,7 +83,7 @@ function ai_auto_alt_activate() {
         'OPENAI_API_KEY' => '',
         'OPENAI_MODEL' => 'gpt-4-1106-preview',
         'MEDIA_ATTACHMENT_TYPES' => array('jpg', 'jpeg', 'png', 'gif', 'webp'),
-        'OPENAI_PROMPT' => "You are an expert in web development for the visually impaired. I am going to give you an image I want you to generate alternate text for. This is expressly to help visually impaired persons navigate the website, so you should focus on text that explains what the image does and the context of it, rather than long verbose descriptions.\n\nPlease review your work before returning text.\n\nThe image is: {{URL}}"
+        'OPENAI_PROMPT' => "You are an expert in web development for the visually impaired. I am going to give you an image I want you to generate alternate text for. This is expressly to help visually impaired persons navigate the website, so you should focus on text that explains what the image does and the context of it, rather than long verbose descriptions.\n\nPlease review your work before returning text."
     );
     
     // Add default settings to the database if they don't already exist

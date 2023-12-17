@@ -245,6 +245,23 @@ function ai_auto_alt_register_settings() {
         PLUGIN_NAMESPACE . '_advanced_settings_section',
         array('label_for' => 'ai_auto_alt_images_md_path')
     );
+
+    add_settings_field(
+        'ai_auto_alt_openai_temperature',
+        'OpenAI Temperature',
+        'ai_auto_alt_openai_temperature_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_settings_section' // Assuming you're adding to the main settings section
+    );
+
+    add_settings_field(
+        'ai_auto_alt_openai_top_p',
+        'OpenAI Top P',
+        'ai_auto_alt_openai_top_p_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_settings_section' // Assuming you're adding to the main settings section
+    );
+
 }
 
 add_action('admin_init', 'ai_auto_alt_register_settings');
@@ -271,7 +288,9 @@ function ai_auto_alt_activate() {
         EOD,
         'AI_AUTO_ALT_LOCAL_DEBUG' => false,
         'AI_AUTO_ALT_IMAGES_MD_PATH' => '/var/www/html/wp-content/uploads/2020/01/images.md', // Default path setting
-        );
+        'OPENAI_TEMPERATURE' => 0.7, // Suitable default value for 'temperature'
+        'OPENAI_TOP_P' => 1.0, // Suitable default value for 'top_p'    
+    );
     
     // Add default settings to the database if they don't already exist
     if (!get_option(PLUGIN_NAMESPACE . '_settings')) {
@@ -288,6 +307,11 @@ function ai_auto_alt_deactivate() {
 }
 
 register_deactivation_hook(__FILE__, 'ai_auto_alt_deactivate');
+
+// Callback for the settings section
+function ai_auto_alt_settings_section_cb() {
+    echo '<p>Enter your OpenAI settings below:</p>';
+}
 
 // Callback for the API key field
 function ai_auto_alt_api_key_cb() {
@@ -317,6 +341,20 @@ function ai_auto_alt_openai_prompt_cb() {
     $prompt = $options['OPENAI_PROMPT'];
     echo '<textarea id="ai_auto_alt_openai_prompt" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_PROMPT]" rows="5" cols="50" class="large-text code">' . esc_textarea($prompt) . '</textarea>';
     echo '<p class="description">The prompt text sent to OpenAI API for generating alt text (customizable to guide the response).</p>';
+}
+
+// Callback for the OpenAI Temperature field
+function ai_auto_alt_openai_temperature_cb() {
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    echo '<input id="ai_auto_alt_openai_temperature" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_TEMPERATURE]" type="number" step="0.01" min="0" max="1" value="' . esc_attr($options['OPENAI_TEMPERATURE']) . '" class="regular-text" />';
+    echo '<p class="description">Controls randomness: lower values make responses more deterministic, higher values more random (range 0-1).</p>';
+}
+
+// Callback for the OpenAI Top P field
+function ai_auto_alt_openai_top_p_cb() {
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    echo '<input id="ai_auto_alt_openai_top_p" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_TOP_P]" type="number" step="0.01" min="0" max="1" value="' . esc_attr($options['OPENAI_TOP_P']) . '" class="regular-text" />';
+    echo '<p class="description">Controls diversity via nucleus sampling: 0.5 means half of all likelihood-weighted options are considered.</p>';
 }
 
 function ai_auto_alt_local_debug_cb() {

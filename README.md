@@ -27,6 +27,15 @@ Upon activation, the plugin listens for media upload events and utilizes OpenAI'
 2. Configure your OpenAI API settings in the plugin's settings page.
 3. Start uploading images and watch as alt text is automatically generated.
 
+## Privacy:
+This plugin does not store any images or alt text on the server. All image data is processed locally and sent to OpenAI's API for alt text generation.
+As of 2023-12-17 OpenAI says that will not store data sent to the API for more than 30 days. [https://openai.com/enterprise-privacy/](https://openai.com/enterprise-privacy/)
+
+## Security:
+Reasonable steps have been taken to avoid XSS and SQL injection vulnerabilities. Returned data from OpenAI is sanitized before being displayed. EXIF data is sanitized before being sent to OpenAI.
+
+However, use at your own risk. If you run a site where anybody can upload media this may increase risk.
+
 # About this project
 
 I enjoy blogging. I like to make my website relatively accessible, to the extent that I have time and resources, given that I am a full-time dad and a full-time small business owner. I _hate_ writing

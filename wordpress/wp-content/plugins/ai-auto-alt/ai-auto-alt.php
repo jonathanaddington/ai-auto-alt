@@ -117,10 +117,18 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
                 ]
             ],
         ],
-        'temperature' => $options['OPENAI_TEMPERATURE'],
-        'top_p' => $options['OPENAI_TOP_P'],
         'max_tokens' => $options['OPEN_AI_MAX_TOKENS']
     ];
+
+    // Use either top_p or temperature
+    if (!empty($options['AI_AUTO_ALT_USE_TOP_P'])) {
+        // Use top_p and remove temperature from the request data
+        $request_data['top_p'] = $options['OPENAI_TOP_P'];
+    } else {
+        // Use temperature and remove top_p from the request data
+        $request_data['temperature'] = $options['OPENAI_TEMPERATURE'];
+    }
+    
 
     /* Sample return data based on the OpenAI docs
 
@@ -277,6 +285,16 @@ function ai_auto_alt_register_settings() {
         array('label_for' => 'ai_auto_alt_local_debug')
     );
 
+    // Add a call to add_settings_field in ai_auto_alt_register_settings()
+    add_settings_field(
+        'ai_auto_alt_use_top_p',
+        'Use Top P',
+        'ai_auto_alt_use_top_p_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_settings_section',
+        array('label_for' => 'ai_auto_alt_use_top_p')
+    );
+
     add_settings_field(
         'ai_auto_alt_openai_max_tokens',
         'OpenAI Max Tokens',
@@ -333,6 +351,7 @@ function ai_auto_alt_activate() {
         EOD,
         'AI_AUTO_ALT_LOCAL_DEBUG' => false,
         'AI_AUTO_ALT_IMAGES_MD_PATH' => '/var/www/html/wp-content/uploads/2020/01/images.md', // Default path setting
+        'AI_AUTO_ALT_USE_TOP_P' => true, // Default to top_p
         'OPENAI_TEMPERATURE' => 0.7, // Suitable default value for 'temperature'
         'OPENAI_TOP_P' => 1.0, // Suitable default value for 'top_p'    
         'OPEN_AI_MAX_TOKENS' => 500 // Suitable default value for 'max_tokens
@@ -387,6 +406,14 @@ function ai_auto_alt_openai_prompt_cb() {
     $prompt = $options['OPENAI_PROMPT'];
     echo '<textarea id="ai_auto_alt_openai_prompt" name="' . PLUGIN_NAMESPACE . '_settings[OPENAI_PROMPT]" rows="5" cols="50" class="large-text code">' . esc_textarea($prompt) . '</textarea>';
     echo '<p class="description">The prompt text sent to OpenAI API for generating alt text (customizable to guide the response).</p>';
+}
+
+function ai_auto_alt_use_top_p_cb() {
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    // Assuming 'AI_AUTO_ALT_USE_TOP_P' is a boolean, just use !empty() on the value.
+    $use_top_p_checked = !empty($options['AI_AUTO_ALT_USE_TOP_P']) ? 'checked' : '';
+    echo '<input id="ai_auto_alt_use_top_p" name="' . PLUGIN_NAMESPACE . '_settings[AI_AUTO_ALT_USE_TOP_P]" type="checkbox" ' . $use_top_p_checked . ' value="1">';
+    echo '<p class="description">Use Top P instead of Temperature for AI responses. When checked, Top P will be used.</p>';
 }
 
 // Callback for the OpenAI Temperature field
@@ -543,6 +570,7 @@ function ai_auto_alt_settings_validate($input) {
     }
 
     $new_input['AI_AUTO_ALT_LOCAL_DEBUG'] = (bool) $input['AI_AUTO_ALT_LOCAL_DEBUG'];
+    $new_input['AI_AUTO_ALT_USE_TOP_P'] = !empty($input['AI_AUTO_ALT_USE_TOP_P']);
 
     return $new_input;
 }
@@ -596,3 +624,32 @@ function ai_auto_alt_add_generate_link( $actions, $post ) {
 }
 
 add_filter( 'media_row_actions', 'ai_auto_alt_add_generate_link', 10, 2 );
+
+function ai_auto_alt_handle_generate_link() {
+    // Check if our custom GET parameter is set
+    if (isset($_GET['ai_auto_alt_generate'])) {
+        // Get the attachment ID from the URL
+        $attachment_id = intval($_GET['ai_auto_alt_generate']);
+
+        // Verify the nonce
+        $nonce_action = 'ai_auto_alt_generate_' . $attachment_id;
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], $nonce_action)) {
+            die('Security check');
+        }
+
+        // Check current user capability and whether the attachment exists
+        if (current_user_can('manage_options') && get_post($attachment_id)) {
+            // Call your main function. Make sure it handles the process correctly.
+            ai_auto_alt_media_upload_hook($attachment_id);
+
+            // Optional: Redirect to referer to prevent repeated URL usage after action
+            if (!empty(wp_get_referer())) {
+                wp_redirect(wp_get_referer());
+                exit;
+            }
+        }
+    }
+}
+
+// Hook onto admin_init to catch the custom link action
+add_action('admin_init', 'ai_auto_alt_handle_generate_link');

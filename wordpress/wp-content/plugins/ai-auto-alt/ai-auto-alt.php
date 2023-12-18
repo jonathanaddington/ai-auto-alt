@@ -585,7 +585,7 @@ add_filter( 'plugin_action_links_ai-auto-alt/ai-auto-alt.php', 'ai_auto_alt_add_
 
 // Adds a custom link to media row actions to generate alt text for administrator users only.
 function ai_auto_alt_add_generate_link( $actions, $post ) {
-    if ( current_user_can( 'manage_options' ) && 'image' === $post->post_mime_type && ! get_post_meta( $post->ID, '_wp_attachment_image_alt', true ) ) {
+    if ( current_user_can( 'manage_options' ) && strpos( $post->post_mime_type, 'image/' ) === 0 ) {
         $url = admin_url( 'upload.php?ai_auto_alt_generate=' . $post->ID );
         $actions['ai_auto_alt_generate'] = '<a href="' . esc_url( wp_nonce_url( $url, 'ai_auto_alt_generate_' . $post->ID ) ) . '">' . __('Generate Alt Text', 'ai-auto-alt') . '</a>';
     }

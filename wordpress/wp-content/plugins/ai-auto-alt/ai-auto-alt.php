@@ -654,3 +654,21 @@ function ai_auto_alt_handle_generate_link() {
 
 // Hook onto admin_init to catch the custom link action
 add_action('admin_init', 'ai_auto_alt_handle_generate_link');
+
+function ai_auto_alt_add_alt_text_exists_column($columns) {
+    $columns['ai_auto_alt_text_exists'] = __('Alt Text Exists', 'ai-auto-alt');
+    return $columns;
+}
+add_filter('manage_media_columns', 'ai_auto_alt_add_alt_text_exists_column');
+
+function ai_auto_alt_show_alt_text_exists_in_column($column_name, $post_id) {
+    if ('ai_auto_alt_text_exists' === $column_name) {
+        $alt_text = get_post_meta($post_id, '_wp_attachment_image_alt', true);
+        if (!empty($alt_text)) {
+            echo '&#10004;'; // Checkmark symbol
+        } else {
+            echo __('No', 'ai-auto-alt'); // Indicates no alt text is set
+        }
+    }
+}
+add_action('manage_media_custom_column', 'ai_auto_alt_show_alt_text_exists_in_column', 10, 2);

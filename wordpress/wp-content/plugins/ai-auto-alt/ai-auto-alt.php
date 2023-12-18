@@ -260,6 +260,24 @@ function ai_auto_alt_register_settings() {
         array('label_for' => 'ai_auto_alt_openai_prompt')
     );
 
+    // Field for showing 'Alt Text Exists' column
+    add_settings_field(
+        'show_alt_text_exists_column',
+        __('Show Alt Text Exists Column', 'ai-auto-alt'),
+        'ai_auto_alt_show_alt_text_exists_column_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_settings_section'
+    );
+
+    // Field for showing 'Alt Text Preview' column
+    add_settings_field(
+        'show_alt_text_preview_column',
+        __('Show Alt Text Preview Column', 'ai-auto-alt'),
+        'ai_auto_alt_show_alt_text_preview_column_cb',
+        PLUGIN_NAMESPACE,
+        PLUGIN_NAMESPACE . '_settings_section'
+    );
+
     add_settings_section(
         PLUGIN_NAMESPACE . '_advanced_settings_section',
         'AI Auto Alt Advanced Settings',
@@ -349,6 +367,8 @@ function ai_auto_alt_activate() {
         Please review your work before returning text.
 
         EOD,
+        'show_alt_text_preview_column' => true,
+        'show_alt_text_exists_column' => true,
         'AI_AUTO_ALT_LOCAL_DEBUG' => false,
         'AI_AUTO_ALT_IMAGES_MD_PATH' => '/var/www/html/wp-content/uploads/2020/01/images.md', // Default path setting
         'AI_AUTO_ALT_USE_TOP_P' => true, // Default to top_p
@@ -454,6 +474,20 @@ function ai_auto_alt_images_md_path_cb() {
 // Define the callback function if you have an advanced settings section:
 function ai_auto_alt_advanced_settings_section_cb() {
     echo '<p>Advanced settings for the AI Auto Alt plugin:</p>';
+}
+
+// Callback for 'Alt Text Exists' column setting field
+function ai_auto_alt_show_alt_text_exists_column_cb() {
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    $checked = isset($options['show_alt_text_exists_column']) ? 'checked="checked"' : '';
+    echo '<input id="show_alt_text_exists_column" name="' . PLUGIN_NAMESPACE . '_settings[show_alt_text_exists_column]" type="checkbox" ' . $checked . ' value="1">';
+}
+
+// Callback for 'Alt Text Preview' column setting field
+function ai_auto_alt_show_alt_text_preview_column_cb() {
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    $checked = isset($options['show_alt_text_preview_column']) ? 'checked="checked"' : '';
+    echo '<input id="show_alt_text_preview_column" name="' . PLUGIN_NAMESPACE . '_settings[show_alt_text_preview_column]" type="checkbox" ' . $checked . ' value="1">';
 }
 
 // Function to create settings page
@@ -571,6 +605,8 @@ function ai_auto_alt_settings_validate($input) {
 
     $new_input['AI_AUTO_ALT_LOCAL_DEBUG'] = (bool) $input['AI_AUTO_ALT_LOCAL_DEBUG'];
     $new_input['AI_AUTO_ALT_USE_TOP_P'] = !empty($input['AI_AUTO_ALT_USE_TOP_P']);
+    $new_input['show_alt_text_exists_column'] = isset($input['show_alt_text_exists_column']) ? (bool)$input['show_alt_text_exists_column'] : false;
+    $new_input['show_alt_text_preview_column'] = isset($input['show_alt_text_preview_column']) ? (bool)$input['show_alt_text_preview_column'] : false;
 
     return $new_input;
 }
@@ -658,7 +694,10 @@ add_action('admin_init', 'ai_auto_alt_handle_generate_link');
 // Add column to media library to indicate whether alt text exists
 // Make it easy to find images that need alt text
 function ai_auto_alt_add_alt_text_exists_column($columns) {
-    $columns['ai_auto_alt_text_exists'] = __('Alt Text Exists', 'ai-auto-alt');
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    if (!empty($options['show_alt_text_exists_column'])) {
+        $columns['ai_auto_alt_text_exists'] = __('Alt Text Exists', 'ai-auto-alt');
+    }
     return $columns;
 }
 add_filter('manage_media_columns', 'ai_auto_alt_add_alt_text_exists_column');
@@ -676,7 +715,10 @@ function ai_auto_alt_show_alt_text_exists_in_column($column_name, $post_id) {
 add_action('manage_media_custom_column', 'ai_auto_alt_show_alt_text_exists_in_column', 10, 2);
 
 function ai_auto_alt_add_alt_text_preview_column($columns) {
-    $columns['ai_auto_alt_text_preview'] = __('Alt Text Preview', 'ai-auto-alt');
+    $options = get_option(PLUGIN_NAMESPACE . '_settings');
+    if (!empty($options['show_alt_text_preview_column'])) {
+        $columns['ai_auto_alt_text_preview'] = __('Alt Text Preview', 'ai-auto-alt');
+    }
     return $columns;
 }
 add_filter('manage_media_columns', 'ai_auto_alt_add_alt_text_preview_column');

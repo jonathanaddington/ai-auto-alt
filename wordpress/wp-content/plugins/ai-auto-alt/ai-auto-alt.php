@@ -24,6 +24,12 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
         $images_md_path = isset($options['AI_AUTO_ALT_IMAGES_MD_PATH']) ? $options['AI_AUTO_ALT_IMAGES_MD_PATH'] : '/var/www/html/wp-content/uploads/2020/01/images.md';
         if ( file_exists($images_md_path) ) {
             $lines = file($images_md_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+            // Remove lines that start with a hash (#) or are empty
+            $lines = array_filter($lines, function($line) {
+                return !empty($line) && $line[0] != '#';
+            });
+
             if ($lines) {
                 $random_line = $lines[array_rand($lines)];
                 $attachment_url = trim($random_line); // Assume each line contains only a single URL
@@ -32,6 +38,7 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
             }
         } else {
             error_log('The images.md file does not exist at the specified location.');
+            exit;
         }
     } else {
         // Get the full URL to the image
@@ -403,7 +410,8 @@ function ai_auto_alt_openai_max_tokens_cb() {
 
 function ai_auto_alt_local_debug_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
-    $local_debug_checked = isset($options['AI_AUTO_ALT_LOCAL_DEBUG']) ? 'checked' : '';
+    // Check that AI_AUTO_ALT_LOCAL_DEBUG is set and true (this will handle `true` or `1` correctly).
+    $local_debug_checked = !empty($options['AI_AUTO_ALT_LOCAL_DEBUG']) ? 'checked' : '';
     echo '<input id="ai_auto_alt_local_debug" name="' . PLUGIN_NAMESPACE . '_settings[AI_AUTO_ALT_LOCAL_DEBUG]" type="checkbox" ' . $local_debug_checked . ' value="1">';
     echo '<p class="description">Enable local debugging mode to use test URLs from a markdown file.</p>';
 }
@@ -448,6 +456,7 @@ function ai_auto_alt_display_settings() {
 
 // Validation callback function
 function ai_auto_alt_settings_validate($input) {
+
     $new_input = get_option(PLUGIN_NAMESPACE . '_settings');
 
     $valid_models = array('gpt-4-vision-preview'); // Specify valid models
@@ -531,14 +540,7 @@ function ai_auto_alt_settings_validate($input) {
         }
     }
 
-    // Process ai_auto_alt_local_debug checkbox
-    if ( isset( $_POST['ai_auto_alt_local_debug'] ) ) {
-        // If 'ai_auto_alt_local_debug' is set, the checkbox was checked.
-        $new_input['AI_AUTO_ALT_LOCAL_DEBUG'] = true;
-    } else {
-        // If 'ai_auto_alt_local_debug' is not set, the checkbox was not checked.
-        $new_input['AI_AUTO_ALT_LOCAL_DEBUG'] = false;
-    }
+    $new_input['AI_AUTO_ALT_LOCAL_DEBUG'] = (bool) $input['AI_AUTO_ALT_LOCAL_DEBUG'];
 
     return $new_input;
 }

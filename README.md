@@ -99,3 +99,14 @@ real uploaded attachment. This allows for local development when public access t
 environment is not available.
 
 The image URLs are all from Wikimedia Commons and are licensed without restrictions.
+
+## Contributing
+If you've gotten this far you know how to fork and submit a PR. If you don't want to do that, open an issue
+with the adjusted code.
+
+_Either way please be as clear as you can about what you want to change and ***why**._ As mentioned above,
+I am  NOT a WordPress developer. Talk to me like I'm a 10th grader.
+
+# Ownership
+I do not have significant motivation to maintain this project long term. If you are interested in taking
+over ownership, please contact me. 

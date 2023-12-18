@@ -675,6 +675,23 @@ function ai_auto_alt_show_alt_text_exists_in_column($column_name, $post_id) {
 }
 add_action('manage_media_custom_column', 'ai_auto_alt_show_alt_text_exists_in_column', 10, 2);
 
+function ai_auto_alt_add_alt_text_preview_column($columns) {
+    $columns['ai_auto_alt_text_preview'] = __('Alt Text Preview', 'ai-auto-alt');
+    return $columns;
+}
+add_filter('manage_media_columns', 'ai_auto_alt_add_alt_text_preview_column');
+
+function ai_auto_alt_show_alt_text_preview_in_column($column_name, $post_id) {
+    if ('ai_auto_alt_text_preview' === $column_name) {
+        $alt_text = get_post_meta($post_id, '_wp_attachment_image_alt', true);
+        echo esc_html(mb_substr($alt_text, 0, 100));
+        if (strlen($alt_text) > 100) {
+            echo '&hellip;'; // Add an ellipsis to indicate the text is shortened
+        }
+    }
+}
+add_action('manage_media_custom_column', 'ai_auto_alt_show_alt_text_preview_in_column', 10, 2);
+
 // Bulk action to generate alt text for selected images in the media library
 function ai_auto_alt_add_bulk_action($bulk_actions) {
     if (current_user_can('manage_options')) {

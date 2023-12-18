@@ -481,6 +481,7 @@ function ai_auto_alt_show_alt_text_exists_column_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     $checked = isset($options['show_alt_text_exists_column']) ? 'checked="checked"' : '';
     echo '<input id="show_alt_text_exists_column" name="' . PLUGIN_NAMESPACE . '_settings[show_alt_text_exists_column]" type="checkbox" ' . $checked . ' value="1">';
+    echo '<p>If enabled, the media library list view will show a column indicating whether alt text exists.</p>';
 }
 
 // Callback for 'Alt Text Preview' column setting field
@@ -488,6 +489,7 @@ function ai_auto_alt_show_alt_text_preview_column_cb() {
     $options = get_option(PLUGIN_NAMESPACE . '_settings');
     $checked = isset($options['show_alt_text_preview_column']) ? 'checked="checked"' : '';
     echo '<input id="show_alt_text_preview_column" name="' . PLUGIN_NAMESPACE . '_settings[show_alt_text_preview_column]" type="checkbox" ' . $checked . ' value="1">';
+    echo '<p>If enabled, the media library list view will show a column with a preview of the alt text.</p>';
 }
 
 // Function to create settings page

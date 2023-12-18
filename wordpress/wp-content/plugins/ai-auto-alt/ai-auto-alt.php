@@ -655,6 +655,8 @@ function ai_auto_alt_handle_generate_link() {
 // Hook onto admin_init to catch the custom link action
 add_action('admin_init', 'ai_auto_alt_handle_generate_link');
 
+// Add column to media library to indicate whether alt text exists
+// Make it easy to find images that need alt text
 function ai_auto_alt_add_alt_text_exists_column($columns) {
     $columns['ai_auto_alt_text_exists'] = __('Alt Text Exists', 'ai-auto-alt');
     return $columns;

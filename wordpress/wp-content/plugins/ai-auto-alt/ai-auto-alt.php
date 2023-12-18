@@ -625,6 +625,7 @@ function ai_auto_alt_add_generate_link( $actions, $post ) {
 
 add_filter( 'media_row_actions', 'ai_auto_alt_add_generate_link', 10, 2 );
 
+
 function ai_auto_alt_handle_generate_link() {
     // Check if our custom GET parameter is set
     if (isset($_GET['ai_auto_alt_generate'])) {

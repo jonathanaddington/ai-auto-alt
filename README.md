@@ -9,6 +9,7 @@ Make your website more accessible to visually impaired users with the AI Auto Al
 - **EXIF Data Analysis**: Gain more meaningful descriptions by using image metadata (EXIF) for an enhanced understanding of each image, when available.
 - **Fully Customizable Prompts**: Adjust the AI prompts to tailor alt text generation to your specific needs and the context of your website.
 - **Advanced Settings**: Fine-tune the AI response with settings like temperature control, top P value, and max token limit to achieve the desired level of creativity and specificity.
+- **Bulk Alt Text Generation**: Generate alt text for  existing images in your media library with a single click.
 
 ## Benefits:
 
@@ -26,6 +27,13 @@ Upon activation, the plugin listens for media upload events and utilizes OpenAI'
 1. Install and activate AI Auto Alt Text.
 2. Configure your OpenAI API settings in the plugin's settings page.
 3. Start uploading images and watch as alt text is automatically generated.
+
+If you view your media library in the list view you will have an option to generate alt text for that media item, or select multiple items and generate alt text for all of them at once.
+![Alt text](image-2.png) 
+
+![Alt text](image-1.png)
+
+Each image does have to be submitted to OpenAI individually, so it may take a few seconds to generate alt text for each image. If you have a lot of images, you will need to do this in batches.
 
 ## Privacy:
 This plugin does not store any images or alt text on the server. All image data is processed locally and sent to OpenAI's API for alt text generation.

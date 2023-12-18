@@ -674,3 +674,46 @@ function ai_auto_alt_show_alt_text_exists_in_column($column_name, $post_id) {
     }
 }
 add_action('manage_media_custom_column', 'ai_auto_alt_show_alt_text_exists_in_column', 10, 2);
+
+// Bulk action to generate alt text for selected images in the media library
+function ai_auto_alt_add_bulk_action($bulk_actions) {
+    if (current_user_can('manage_options')) {
+        $bulk_actions['generate_alt_text'] = __('Generate Alt Text', 'ai-auto-alt');
+    }
+    return $bulk_actions;
+}
+add_filter('bulk_actions-upload', 'ai_auto_alt_add_bulk_action');
+
+function ai_auto_alt_handle_bulk_action($redirect_to, $doaction, $post_ids) {
+    if ($doaction !== 'generate_alt_text') {
+        return $redirect_to;
+    }
+
+    // Capability check for admins only
+    if (!current_user_can('manage_options')) {
+        return $redirect_to;
+    }
+
+    foreach ($post_ids as $post_id) {
+        // Perform alt text generation for each attachment ID.
+        ai_auto_alt_media_upload_hook($post_id);
+    }
+
+    // Redirect to the media library with a custom query variable to trigger the admin notice
+    $redirect_to = add_query_arg('ai_auto_alt_generated', count($post_ids), $redirect_to);
+    return $redirect_to;
+}
+add_filter('handle_bulk_actions-upload', 'ai_auto_alt_handle_bulk_action', 10, 3);
+
+function ai_auto_alt_bulk_action_admin_notice() {
+    // Admin capability check
+    if (!current_user_can('manage_options') || empty($_REQUEST['ai_auto_alt_generated'])) {
+        return;
+    }
+
+    $count = intval($_REQUEST['ai_auto_alt_generated']);
+    echo '<div id="message" class="updated fade"><p>' .
+         sprintf(_n('%s image had alt text generated.', '%s images had alt text generated.', $count, 'ai-auto-alt'), $count) .
+         '</p></div>';
+}
+add_action('admin_notices', 'ai_auto_alt_bulk_action_admin_notice');

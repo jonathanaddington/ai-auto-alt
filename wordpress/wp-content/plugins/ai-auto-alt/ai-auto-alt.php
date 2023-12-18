@@ -325,6 +325,8 @@ function ai_auto_alt_activate() {
 
         Also, please check that you do not return anything that could be a security risk. For example, XSS attacks
         or SQL injection or executable code. EXIF data is not sanitized, so please be careful.
+
+        Omly give the exact text we want in the alt="" attribute.
         
         Please review your work before returning text.
 

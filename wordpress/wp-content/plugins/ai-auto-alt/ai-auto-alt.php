@@ -267,7 +267,7 @@ function ai_auto_alt_register_settings() {
         'ai_auto_alt_local_debug_cb',
         PLUGIN_NAMESPACE,
         PLUGIN_NAMESPACE . '_advanced_settings_section',
-        array('label_for' => 'ai_auto_alt_images_md_path')
+        array('label_for' => 'ai_auto_alt_local_debug')
     );
 
     add_settings_field(
@@ -531,6 +531,15 @@ function ai_auto_alt_settings_validate($input) {
         }
     }
 
+    // Process ai_auto_alt_local_debug checkbox
+    if ( isset( $_POST['ai_auto_alt_local_debug'] ) ) {
+        // If 'ai_auto_alt_local_debug' is set, the checkbox was checked.
+        $new_input['AI_AUTO_ALT_LOCAL_DEBUG'] = true;
+    } else {
+        // If 'ai_auto_alt_local_debug' is not set, the checkbox was not checked.
+        $new_input['AI_AUTO_ALT_LOCAL_DEBUG'] = false;
+    }
+
     return $new_input;
 }
 
@@ -571,3 +580,15 @@ function ai_auto_alt_add_settings_link( $links ) {
 }
 
 add_filter( 'plugin_action_links_ai-auto-alt/ai-auto-alt.php', 'ai_auto_alt_add_settings_link' );
+
+// Adds a custom link to media row actions to generate alt text for administrator users only.
+function ai_auto_alt_add_generate_link( $actions, $post ) {
+    if ( current_user_can( 'manage_options' ) && 'image' === $post->post_mime_type && ! get_post_meta( $post->ID, '_wp_attachment_image_alt', true ) ) {
+        $url = admin_url( 'upload.php?ai_auto_alt_generate=' . $post->ID );
+        $actions['ai_auto_alt_generate'] = '<a href="' . esc_url( wp_nonce_url( $url, 'ai_auto_alt_generate_' . $post->ID ) ) . '">' . __('Generate Alt Text', 'ai-auto-alt') . '</a>';
+    }
+
+    return $actions;
+}
+
+add_filter( 'media_row_actions', 'ai_auto_alt_add_generate_link', 10, 2 );

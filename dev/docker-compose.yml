@@ -26,6 +26,9 @@ services:
       # Mount the debug log
       - ../wordpress/wp-content/debug.log:/var/www/html/wp-content/debug.log
 
+      # Mount test images
+      - ./images:/var/www/html/wp-content/uploads/2020/01
+      
   db:
     image: mariadb:11.2.2
     restart: always

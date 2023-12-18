@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AI Auto Alt
  * Description: Uses OpenAI to automatically add alt text to images
- * Version: 1.0-alpha
+ * Version: 1.0.1-alpha
  * Author: Jonathan Addington
  * Author URI: https://jonathanaddington.com
  */

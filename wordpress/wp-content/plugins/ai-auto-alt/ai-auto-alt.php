@@ -524,7 +524,7 @@ function ai_auto_alt_settings_validate($input) {
 
     $new_input = get_option(PLUGIN_NAMESPACE . '_settings');
 
-    $valid_models = array('gpt-4-vision-preview'); // Specify valid models
+    $valid_models = array('gpt-4o, gpt-4o-mini','gpt-4-turbo'); // Specify valid models
     
     // Validate OpenAI Model
     if (isset($input['OPENAI_MODEL'])) {

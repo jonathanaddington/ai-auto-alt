@@ -347,7 +347,7 @@ function ai_auto_alt_activate() {
     // Set default settings
     $default_settings = array(
         'OPENAI_API_KEY' => '',
-        'OPENAI_MODEL' => 'gpt-4-vision-preview',
+        'OPENAI_MODEL' => 'gpt-4o',
         'MEDIA_ATTACHMENT_TYPES' => array('jpg', 'jpeg', 'png', 'gif', 'webp'),
         'OPENAI_PROMPT' => <<<EOD
         You are an expert in web development for the visually impaired. I am going to give you an image I want you to

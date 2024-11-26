@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AI Auto Alt
  * Description: Uses OpenAI to automatically add alt text to images
- * Version: 1.0.1-alpha
+ * Version: 1.0.2-beta
  * Author: Jonathan Addington
  * Author URI: https://jonathanaddington.com
  */
@@ -76,7 +76,7 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
-        "model": "gpt-4-vision-preview",
+        "model": "gpt-4o-mini",
         "messages": [
         {
             "role": "user",
@@ -99,7 +99,6 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
     */
 
     // Create the API request
-    // Create the prompt
     $request_data = [
         'model' => $options['OPENAI_MODEL'],
         'messages' => [
@@ -112,13 +111,15 @@ function ai_auto_alt_media_upload_hook( $attachment_id ) {
                     ],
                     [
                         'type' => 'image_url',
-                        'image_url' => $attachment_url  // Directly passing the URL
+                        'image_url' => [
+                            'url' => $attachment_url  // Wrap the URL in an array with 'url' key
+                        ]
                     ]
                 ]
             ],
         ],
         'max_tokens' => $options['OPEN_AI_MAX_TOKENS']
-    ];
+];
 
     // Use either top_p or temperature
     if (!empty($options['AI_AUTO_ALT_USE_TOP_P'])) {
@@ -524,7 +525,7 @@ function ai_auto_alt_settings_validate($input) {
 
     $new_input = get_option(PLUGIN_NAMESPACE . '_settings');
 
-    $valid_models = array('gpt-4o, gpt-4o-mini','gpt-4-turbo'); // Specify valid models
+    $valid_models = array('gpt-4o', 'gpt-4o-mini','gpt-4-turbo'); // Specify valid models
     
     // Validate OpenAI Model
     if (isset($input['OPENAI_MODEL'])) {

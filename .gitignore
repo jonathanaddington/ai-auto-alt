@@ -34,3 +34,6 @@ Icon
 
 # Ignore WordPress bind mounted directory
 dev/wordpress
+dev/db
+dev/_MACOSX
+dev/lib/
